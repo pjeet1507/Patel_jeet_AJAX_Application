@@ -3,8 +3,9 @@
   const hotspots = document.querySelectorAll(".Hotspot");
   const materialTemplate = document.querySelector("#material-template");
   const materialList = document.querySelector("#material-list");
-  const loadingSpinner = document.querySelector("#loading-spinner");
   const errorMessageElement = document.querySelector("#error-message");
+
+  let spinner = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_rXNP{animation:spinner_YeBj .8s infinite}@keyframes spinner_YeBj{0%{animation-timing-function:cubic-bezier(0.33,0,.66,.33);cy:5px}46.875%{cy:20px;rx:4px;ry:4px}50%{animation-timing-function:cubic-bezier(0.33,.66,.66,1);cy:20.5px;rx:4.8px;ry:3px}53.125%{rx:4px;ry:4px}100%{cy:5px}}</style><ellipse class="spinner_rXNP" cx="12" cy="5" rx="4" ry="4" fill="white"/></svg>`;
 
   function modelLoaded() {
     hotspots.forEach((hotspot) => {
@@ -12,12 +13,12 @@
     });
   }
 
-  function fetchAndDisplayInfoBoxes() {
+  function infobox() {
     const infoBoxApiUrl = "https://swiftpixel.com/earbud/api/infoboxes";
     fetch(infoBoxApiUrl)
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error("api not found");
         }
         return response.json();
       })
@@ -25,26 +26,30 @@
         displayInfoBoxes(infoBoxes);
       })
       .catch((error) => {
-        console.error("Failed to fetch info boxes:", error);
-        displayErrorMessage("Failed to load info boxes.");
+        console.error("Failed to get info boxes:", error);
+        displayErrorMessage("Failed to get info boxes:");
       });
   }
 
-  function fetchAndDisplayMaterials() {
+  function materials() {
+    materialList.innerHTML = spinner;
+
     const materialListApiUrl = "https://swiftpixel.com/earbud/api/materials";
     fetch(materialListApiUrl)
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error("api not found");
         }
         return response.json();
       })
       .then((materials) => {
+        materialList.innerHTML = "";
         displayMaterials(materials);
       })
       .catch((error) => {
-        console.error("Failed to fetch materials:", error);
-        displayErrorMessage("Failed to load materials.");
+        console.error("Failed to get materials:", error);
+        materialList.innerHTML = "";
+        displayErrorMessage("Failed to get materials:");
       });
   }
 
@@ -96,6 +101,6 @@
     hotspot.addEventListener("mouseleave", hideInfo);
   });
 
-  fetchAndDisplayInfoBoxes();
-  fetchAndDisplayMaterials();
+  infobox();
+  materials();
 })();
